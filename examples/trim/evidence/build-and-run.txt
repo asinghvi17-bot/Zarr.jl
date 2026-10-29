@@ -1,0 +1,32 @@
+Environment: Julia 1.13.2, JuliaC 0.3.12, JSON 1.12.2, Linux x86_64
+PR baseline: 0293226dd8f902593e9bc481fe0500a45926788e
+
+julia --compiled-modules=existing --project=examples/trim -m JuliaC --experimental --trim --output-exe disk-smoke examples/trim/disk_smoke.jl
+Compiling...
+✓ Compiling...
+exit: 0; no trim verifier errors or warnings
+
+./disk-smoke examples/trim/trimmed-fixtures 23
+exit: 0 (all four widths, both formats, metadata/chunk round trips and missing-chunk fills)
+
+julia --compiled-modules=existing --project=Zarr/test examples/trim/interop.jl
+Test Summary:                         | Pass  Total
+Trim executable stores opened by Zarr |   16     16
+exit: 0
+
+julia --compiled-modules=existing --project=examples/trim -m JuliaC --experimental --trim --output-exe read-interop examples/trim/read_interop.jl
+Compiling...
+✓ Compiling...
+exit: 0; no trim verifier errors or warnings
+
+./read-interop examples/trim/zarr-fixtures
+exit: 0 (all eight independently Zarr-created arrays read correctly)
+
+python3 examples/trim/check_wire.py examples/trim/trimmed-fixtures
+Validated JSON, fill and raw bytes of all 8 executable-generated stores
+exit: 0
+
+Artifacts are local linked executables (~15 MiB disk-smoke, ~13 MiB read-interop).
+They are not committed. Neither unsafe trimming nor verifier suppression was used.
+There were unrelated package world-age/import warnings and temporary project
+manifest-staleness warnings during some builds; the build and verifier succeeded.

@@ -1,0 +1,7 @@
+Julia 1.13.2; final feature tests on this branch
+Test Summary:                     | Pass  Total   Time
+Concrete complex integer metadata |   72     72  26.0s
+Test Summary:                             | Pass  Total  Time
+Complex integer Base64 wire compatibility |  206    206  0.2s
+
+Process exit status: 0

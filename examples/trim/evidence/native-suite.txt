@@ -1,0 +1,11 @@
+Julia 1.13.2
+Command: julia --compiled-modules=existing --project=Zarr/test examples/trim/run_native_tests.jl
+
+Test Summary: | Pass  Total     Time
+Zarr          | 1197   1197  3m15.3s
+
+Process exit status: 0
+
+Excluded: unavailable MinIO service, python.jl, Python/absent-fixture portions
+of consolidated.jl. Existing absent-v3-fixture and opt-in remote-test skips
+remain in effect. The 1197 passes include all 278 new feature assertions.

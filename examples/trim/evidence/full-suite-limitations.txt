@@ -1,0 +1,17 @@
+The unrestricted Zarr/test/runtests.jl was invoked on this branch with Julia 1.13.2.
+The first run: 624 passed, 2 failed, 2 errored.
+- Two exact outer ZArray type assertions failed after introducing the trailing
+  dtype parameter. Both were changed to use <:MetadataV2{T,N,C,F} and subsequently passed.
+- MinIO: connection refused to local port 9001 after the test's server startup.
+- Python setup: micromamba_jll failed to initialize its lazy artifact:
+  Artifact "micromamba" is a lazy artifact; package developers must call
+  `using LazyArtifacts` in micromamba_jll before using lazy artifacts.
+The failure in python.jl stopped the rest of the unrestricted run.
+
+A subsequent native run (with only MinIO/python.jl omitted) passed 1103 tests,
+with no failed assertions, but stopped at the same Python setup error from
+consolidated.jl's unconditional imports. The final native runner also omits its
+Python/absent-fixture portions while retaining fixture-independent Julia tests.
+
+No Python zarr-library interoperability result is claimed. The 8-store independent
+Python standard-library wire check and Julia-to-Julia interoperability did pass.

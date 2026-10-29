@@ -24,8 +24,9 @@ end
 # A complex integer is the `struct` data type of two fields named `r` and `i`, as
 # in Zarr v2's structured dtype; see `typestr(::Type{<:Complex{<:Signed}})`.
 function typestr3(::Type{Complex{T}}) where {T<:Signed}
-    fields = [Dict{String, Any}("name" => name, "data_type" => typestr3(T)) for name in ("r", "i")]
-    return Dict{String, Any}("name" => "struct", "configuration" => Dict{String, Any}("fields" => fields))
+    check_complex_integer_component(T)
+    fields = [(name=name, data_type=typestr3(T)) for name in ("r", "i")]
+    return (name="struct", configuration=(fields=fields,))
 end
 
 # TODO: Check raw types
@@ -62,8 +63,7 @@ function parse_datatype3(d)
     if name in ("struct", "structured")
         fields = [f isa AbstractDict ? (f["name"], f["data_type"]) : (f[1], f[2]) for f in d["configuration"]["fields"]]
         if length(fields) == 2 && first.(fields) == ["r", "i"] && fields[1][2] == fields[2][2]
-            T = get(typemap3, fields[1][2], Nothing)
-            T <: Signed && return Complex{T}
+            return complex_integer_type(fields[1][2]::AbstractString, Val(3))
         end
         throw(ArgumentError("Unsupported Zarr v3 data_type: $d. The only struct read has fields " *
             "\"r\" and \"i\" of one signed integer type, as Complex{T}"))
@@ -80,26 +80,30 @@ function check_keys(d::AbstractDict, keys)
 end
 
 """Metadata for Zarr version 3 arrays"""
-struct MetadataV3{T,N,P<:AbstractCodecPipeline,E<:AbstractChunkKeyEncoding} <: AbstractMetadata{T,N,E}
+struct MetadataV3{T,N,P<:AbstractCodecPipeline,E<:AbstractChunkKeyEncoding,D} <: AbstractMetadata{T,N,E}
     zarr_format::Int
     node_type::String
     shape::Base.RefValue{NTuple{N, Int}}
     chunks::NTuple{N, Int}
-    dtype::Union{String, Dict{String, Any}}  # data_type in v3
+    dtype::D  # wire representation, concretely per instance
     pipeline::P
     fill_value::Union{T, Nothing}
     chunk_key_encoding::E
     # Julia (column-major) order, i.e. dimension_names[i] names size(A, i); `nothing`
     # marks an unnamed dimension. Reversed to C order when written to zarr.json.
     dimension_names::Union{Nothing, NTuple{N, Union{Nothing, String}}}
-    function MetadataV3{T2,N,P,E}(zarr_format, node_type, shape, chunks, dtype, pipeline, fill_value, chunk_key_encoding, dimension_names=nothing) where {T2,N,P,E}
+    function MetadataV3{T2,N,P,E,D}(zarr_format, node_type, shape, chunks, dtype, pipeline, fill_value, chunk_key_encoding, dimension_names=nothing) where {T2,N,P,E,D}
         zarr_format == 3 || throw(ArgumentError("MetadataV3 only functions if zarr_format == 3"))
         #Do some sanity checks to make sure we have a sane array
         any(<(0), shape) && throw(ArgumentError("Size must be positive"))
         any(<(1), chunks) && throw(ArgumentError("Chunk size must be >= 1 along each dimension"))
-        new{T2,N,P,E}(zarr_format, node_type, Base.RefValue{NTuple{N,Int}}(shape), chunks, dtype, pipeline, fill_value, chunk_key_encoding,
+        new{T2,N,P,E,D}(zarr_format, node_type, Base.RefValue{NTuple{N,Int}}(shape), chunks, dtype, pipeline, fill_value, chunk_key_encoding,
             parse_dimension_names(dimension_names, N))
     end
+end
+function MetadataV3{T,N,P,E}(zf, node, shape, chunks, dtype, pipeline, fv, encoding, names=nothing) where {T,N,P,E}
+    normalized = normalize_dtype3(dtype, Base.nonmissingtype(T))
+    MetadataV3{T,N,P,E,typeof(normalized)}(zf, node, shape, chunks, normalized, pipeline, fv, encoding, names)
 end
 MetadataV3{T2,N,P}(args...) where {T2,N,P} = MetadataV3{T2,N,P,ChunkKeyEncoding}(args...)
 zarr_format(::MetadataV3) = ZarrFormat(Val(3))
@@ -345,7 +349,7 @@ end
 
 # A `struct` fill value is an object keyed by field name.
 fill_value_encoding3(v) = fill_value_encoding(v)
-fill_value_encoding3(v::Complex{<:Signed}) = Dict{String, Any}("r" => real(v), "i" => imag(v))
+fill_value_encoding3(v::Complex{<:Signed}) = (r=real(v), i=imag(v))
 fill_value_decoding(v::AbstractDict, T::Type{<:Complex{<:Signed}}) = T(v["r"], v["i"])
 
 function lower3(md::MetadataV3{T}) where T
@@ -407,4 +411,36 @@ end
 
 function JSON.lower(md::MetadataV3)
     return lower3(md)
+end
+
+
+function complex_integer_type(s::AbstractString, ::Val{3})
+    s == "int8" && return Complex{Int8}
+    s == "int16" && return Complex{Int16}
+    s == "int32" && return Complex{Int32}
+    s == "int64" && return Complex{Int64}
+    throw(ArgumentError("The only struct read has fields r and i of one signed int8/16/32/64 type"))
+end
+
+# Typed representation used when writing; no Dict{String,Any} on this path.
+function typestr3(d::NamedTuple{(:name, :configuration)})
+    fields = d.configuration.fields
+    d.name == "struct" && length(fields) == 2 &&
+        fields[1].name == "r" && fields[2].name == "i" &&
+        fields[1].data_type == fields[2].data_type ||
+        throw(ArgumentError("Invalid complex integer struct dtype"))
+    complex_integer_type(fields[1].data_type, Val(3))
+end
+
+"Validate a v3 dtype against a statically selected complex-integer element type."
+function typestr3(d::Union{AbstractDict,NamedTuple}, ::Type{Complex{T}}) where {T<:Signed}
+    typestr3(d) === Complex{T} || throw(ArgumentError("complex integer dtype does not match the requested type"))
+    return Complex{T}
+end
+fill_value_decoding(v::NamedTuple{(:r,:i)}, ::Type{Complex{T}}) where {T<:Signed} = Complex{T}(v.r, v.i)
+
+normalize_dtype3(dtype, ::Type) = dtype
+function normalize_dtype3(dtype, ::Type{Complex{T}}) where {T<:Signed}
+    typestr3(dtype, Complex{T})
+    typestr3(Complex{T})
 end

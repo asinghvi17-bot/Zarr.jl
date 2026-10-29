@@ -41,7 +41,15 @@ typestr(t::Type{<:DateTime64}) = pydatetime_string(t)
 typestr(::Type{<:AbstractString}) = "|O"
 # NumPy has no complex-integer typestr. A complex integer is the structured dtype of two fields named
 # `r` and `i`, the field names HDF5.jl reads as `Complex` for a compound type.
-typestr(::Type{Complex{T}}) where {T<:Signed} = Any[["r", typestr(T)], ["i", typestr(T)]]
+function check_complex_integer_component(::Type{T}) where {T<:Signed}
+    T in (Int8, Int16, Int32, Int64) ||
+        throw(ArgumentError("Complex integer dtypes require Int8, Int16, Int32 or Int64"))
+    return nothing
+end
+function typestr(::Type{Complex{T}}) where {T<:Signed}
+    check_complex_integer_component(T)
+    return [["r", typestr(T)], ["i", typestr(T)]]
+end
 
 const typestr_regex = r"^([<|>])([tbiufcmMOSUV])(\d*)(\[\w+\])?$"
 const typemap = Dict{Tuple{Char, Int}, DataType}(
@@ -94,11 +102,33 @@ end
 function typestr(fields::AbstractVector, filterlist=nothing)
     if length(fields) == 2 && all(f -> f isa AbstractVector && length(f) == 2, fields) &&
             fields[1][1] == "r" && fields[2][1] == "i" && fields[1][2] == fields[2][2]
-        T = typestr(fields[1][2])
-        T <: Signed && return Complex{T}
+        return complex_integer_type(fields[1][2]::AbstractString, Val(2))
     end
     throw(ArgumentError("structured dtype $(JSON.json(fields)) is not supported: the only structured " *
         "dtype read is [[\"r\", T], [\"i\", T]] with T a signed integer, as Complex{T}"))
+end
+
+
+# Explicit branches keep the supported set closed for static compilation. The
+# generic dtype registries remain available for other types in the JIT API.
+function complex_integer_type(s::AbstractString, ::Val{2})
+    s in ("|i1", "<i1", ">i1") && return Complex{Int8}
+    s in ("<i2", ">i2", "|i2") && return Complex{Int16}
+    s in ("<i4", ">i4", "|i4") && return Complex{Int32}
+    s in ("<i8", ">i8", "|i8") && return Complex{Int64}
+    throw(ArgumentError("the only structured dtype read is a pair of signed int8/16/32/64 fields"))
+end
+
+"""
+    typestr(fields, ::Type{Complex{T}})
+
+Validate a v2 complex-integer dtype against an explicitly selected element type.
+Unlike automatic type discovery, the return type is a singleton known to the
+compiler. The input may be the typed wire representation or parsed JSON.
+"""
+function typestr(fields::AbstractVector, ::Type{Complex{T}}) where {T<:Signed}
+    typestr(fields) === Complex{T} || throw(ArgumentError("complex integer dtype does not match the requested type"))
+    return Complex{T}
 end
 
 
@@ -123,26 +153,34 @@ Base.ndims(::AbstractMetadata{<:Any,N}) where N = N
 
 
 """Metadata for Zarr version 2 arrays"""
-struct MetadataV2{T,N,C,F} <: AbstractMetadata{T,N,ChunkKeyEncoding}
+struct MetadataV2{T,N,C,F,D} <: AbstractMetadata{T,N,ChunkKeyEncoding}
     zarr_format::Int
     node_type::String
     shape::Base.RefValue{NTuple{N, Int}}
     chunks::NTuple{N, Int}
-    dtype::Union{String, Vector{Any}}  # a Vector is a structured dtype; see `typestr`
+    dtype::D  # retain the wire dtype (including byte order), concretely per instance
     compressor::C
     fill_value::Union{T, Nothing}
     order::Char
     filters::F  # not yet supported
     chunk_key_encoding::ChunkKeyEncoding
-    function MetadataV2{T2,N,C,F}(zarr_format, node_type, shape, chunks, dtype, compressor, fill_value, order, filters, chunk_key_encoding) where {T2,N,C,F}
+    function MetadataV2{T2,N,C,F,D}(zarr_format, node_type, shape, chunks, dtype, compressor, fill_value, order, filters, chunk_key_encoding) where {T2,N,C,F,D}
         zarr_format == 2 || throw(ArgumentError("MetadataV2 only functions if zarr_format == 2"))
         #Do some sanity checks to make sure we have a sane array
         any(<(0), shape) && throw(ArgumentError("Size must be positive"))
         any(<(1), chunks) && throw(ArgumentError("Chunk size must be >= 1 along each dimension"))
         order === 'C' || throw(ArgumentError("Currently only 'C' storage order is supported"))
-        new{T2,N,C,F}(zarr_format, node_type, Base.RefValue{NTuple{N,Int}}(shape), chunks, dtype, compressor, fill_value, order, filters, chunk_key_encoding)
+        new{T2,N,C,F,D}(zarr_format, node_type, Base.RefValue{NTuple{N,Int}}(shape), chunks, dtype, compressor, fill_value, order, filters, chunk_key_encoding)
     end
 end
+# Preserve the existing four-parameter constructor and partial type API.
+function MetadataV2{T,N,C,F}(zf, node, shape, chunks, dtype, compressor, fv, order, filters, encoding) where {T,N,C,F}
+    normalized = normalize_dtype2(dtype)
+    MetadataV2{T,N,C,F,typeof(normalized)}(zf, node, shape, chunks, normalized, compressor, fv, order, filters, encoding)
+end
+normalize_dtype2(s::AbstractString) = String(s)
+normalize_dtype2(fields::AbstractVector) = [String[String(x) for x in field] for field in fields]
+
 zarr_format(::MetadataV2) = ZarrFormat(Val(2))
 
 # Type alias for backward compatibility
@@ -289,7 +327,8 @@ end
 fill_value_encoding(v) = v
 fill_value_encoding(::Nothing)=nothing
 # The v2 spec encodes the fill value of a structured dtype as the Base64 of its bytes.
-fill_value_encoding(v::Complex{<:Signed}) = base64encode(reinterpret(UInt8, [v]))
+include("complex_integer_base64.jl")
+fill_value_encoding(v::Complex{<:Signed}) = encode_complex_fill(v)
 function fill_value_encoding(v::AbstractFloat)
     if isnan(v)
         "NaN"
@@ -311,10 +350,7 @@ fill_value_decoding(v, ::Type{ASCIIChar}) = v == "" ? nothing : v
 fill_value_decoding(v::Nothing, ::Type{ZarrCore.ASCIIChar}) = v
 fill_value_decoding(v::Vector, T::Type{<:Complex}) = T(v[1], v[2])
 function fill_value_decoding(v::AbstractString, T::Type{<:Complex{<:Signed}})
-    bytes = base64decode(v)
-    length(bytes) == sizeof(T) || throw(ArgumentError(
-        "fill value $(repr(v)) decodes to $(length(bytes)) bytes; a $T needs $(sizeof(T))"))
-    return only(reinterpret(T, bytes))
+    return decode_complex_fill(v, T)
 end
 # Sometimes when translating between CF (climate and forecast) convention data
 # and Zarr groups, fill values are left as "negative integers" to encode unsigned

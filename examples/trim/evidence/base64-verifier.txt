@@ -1,0 +1,169 @@
+Julia 1.13.2 / JuliaC 0.3.12 / plain --trim
+Error #1: unresolved call from statement decode_slow(
+  :(φ (%78 => Base64.BASE64_CODE_IGN, %324 => %319))::UInt8,
+  :(φ (%78 => Base64.BASE64_CODE_IGN, %324 => %320))::UInt8,
+  :(φ (%78 => Base64.BASE64_CODE_IGN, %324 => %321))::UInt8,
+  :(φ (%78 => Base64.BASE64_CODE_IGN, %324 => %322))::UInt8,
+  (…)::Base64.Buffer,
+  :(φ (%78 => 0, %324 => %323))::Int64,
+  getfield(pipe::Base64.Base64DecodePipe, :io::Symbol)::IO,
+  :(φ (%78 => %2, %324 => %125))::Ptr{UInt8},
+  (…)::UInt64,
+  (…)::Vector{UInt8}
+)::Tuple{Int64, Ptr{UInt8}, Bool}
+
+Stacktrace:
+ [1] read_until_end(pipe::Base64.Base64DecodePipe, ptr::Ptr{UInt8}, n::UInt64)
+   @ Base64 ~/.julia/juliaup/julia-1.13.2+0.x64.linux.gnu/share/julia/stdlib/v1.13/Base64/src/decode.jl:77
+ [2] readbytes!(pipe::Base64.Base64DecodePipe, data::Vector{UInt8}, nb::Int64)
+   @ Base64 ~/.julia/juliaup/julia-1.13.2+0.x64.linux.gnu/share/julia/stdlib/v1.13/Base64/src/decode.jl:122
+ [3] read(s::Base64.Base64DecodePipe, nb::Int64)
+   @ Base io.jl:1199 [inlined]
+ [4] read(s::Base64.Base64DecodePipe)
+   @ Base io.jl:1198 [inlined]
+ [5] base64decode(s::String)
+   @ Base64 ~/.julia/juliaup/julia-1.13.2+0.x64.linux.gnu/share/julia/stdlib/v1.13/Base64/src/decode.jl:216
+ [6] fill_value_decoding(v::String, T::Type{Complex{Int64}})
+   @ ZarrCore ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/ZarrCore/src/metadata.jl:344
+ [7] exercise(::Type{Int64})
+   @ Main ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/examples/trim/smoke.jl:10
+ [8] main(args::Vector{String})
+   @ Main ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/examples/trim/smoke.jl:25 [inlined]
+ [9] _main(argc::Int32, argv::Ptr{Ptr{Int8}})
+   @ Main ~/.factory/runners/personal/depots/lineage/dc2d180db386650909eb04513318efa4ba796f1c6cf4a913d1f4630ac6f1941c/packages/JuliaC/CQ4OE/src/scripts/juliac-buildscript.jl:77
+
+Error #2: unresolved call from statement read_to_buffer(
+  getfield(pipe::Base64.Base64DecodePipe, :io::Symbol)::IO,
+  (…)::Base64.Buffer
+)::Any
+
+Stacktrace:
+ [1] read_until_end(pipe::Base64.Base64DecodePipe, ptr::Ptr{UInt8}, n::UInt64)
+   @ Base64 ~/.julia/juliaup/julia-1.13.2+0.x64.linux.gnu/share/julia/stdlib/v1.13/Base64/src/decode.jl:91
+ [2] readbytes!(pipe::Base64.Base64DecodePipe, data::Vector{UInt8}, nb::Int64)
+   @ Base64 ~/.julia/juliaup/julia-1.13.2+0.x64.linux.gnu/share/julia/stdlib/v1.13/Base64/src/decode.jl:122
+ [3] read(s::Base64.Base64DecodePipe, nb::Int64)
+   @ Base io.jl:1199 [inlined]
+ [4] read(s::Base64.Base64DecodePipe)
+   @ Base io.jl:1198 [inlined]
+ [5] base64decode(s::String)
+   @ Base64 ~/.julia/juliaup/julia-1.13.2+0.x64.linux.gnu/share/julia/stdlib/v1.13/Base64/src/decode.jl:216
+ [6] fill_value_decoding(v::String, T::Type{Complex{Int64}})
+   @ ZarrCore ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/ZarrCore/src/metadata.jl:344
+ [7] exercise(::Type{Int64})
+   @ Main ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/examples/trim/smoke.jl:10
+ [8] main(args::Vector{String})
+   @ Main ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/examples/trim/smoke.jl:25 [inlined]
+ [9] _main(argc::Int32, argv::Ptr{Ptr{Int8}})
+   @ Main ~/.factory/runners/personal/depots/lineage/dc2d180db386650909eb04513318efa4ba796f1c6cf4a913d1f4630ac6f1941c/packages/JuliaC/CQ4OE/src/scripts/juliac-buildscript.jl:77
+
+Error #3: unresolved call from statement eof(
+  getfield(pipe::Base64.Base64DecodePipe, :io::Symbol)::IO
+)::Any
+
+Stacktrace:
+ [1] eof(pipe::Base64.Base64DecodePipe)
+   @ Base64 ~/.julia/juliaup/julia-1.13.2+0.x64.linux.gnu/share/julia/stdlib/v1.13/Base64/src/decode.jl:129
+ [2] readbytes!(pipe::Base64.Base64DecodePipe, data::Vector{UInt8}, nb::Int64)
+   @ Base64 ~/.julia/juliaup/julia-1.13.2+0.x64.linux.gnu/share/julia/stdlib/v1.13/Base64/src/decode.jl:117
+ [3] read(s::Base64.Base64DecodePipe, nb::Int64)
+   @ Base io.jl:1199 [inlined]
+ [4] read(s::Base64.Base64DecodePipe)
+   @ Base io.jl:1198 [inlined]
+ [5] base64decode(s::String)
+   @ Base64 ~/.julia/juliaup/julia-1.13.2+0.x64.linux.gnu/share/julia/stdlib/v1.13/Base64/src/decode.jl:216
+ [6] fill_value_decoding(v::String, T::Type{Complex{Int64}})
+   @ ZarrCore ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/ZarrCore/src/metadata.jl:344
+ [7] exercise(::Type{Int64})
+   @ Main ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/examples/trim/smoke.jl:10
+ [8] main(args::Vector{String})
+   @ Main ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/examples/trim/smoke.jl:25 [inlined]
+ [9] _main(argc::Int32, argv::Ptr{Ptr{Int8}})
+   @ Main ~/.factory/runners/personal/depots/lineage/dc2d180db386650909eb04513318efa4ba796f1c6cf4a913d1f4630ac6f1941c/packages/JuliaC/CQ4OE/src/scripts/juliac-buildscript.jl:77
+
+Error #4: unresolved call from statement write(
+  getfield(pipe::Base64.Base64EncodePipe, :io::Symbol)::IO,
+  (…)::UInt8,
+  (…)::UInt8,
+  0x3d::UInt8,
+  0x3d::UInt8
+)::Any
+
+Stacktrace:
+ [1] close(pipe::Base64.Base64EncodePipe)
+   @ Base64 ~/.julia/juliaup/julia-1.13.2+0.x64.linux.gnu/share/julia/stdlib/v1.13/Base64/src/encode.jl:115
+ [2] base64encode(f::typeof(write), args::Base.ReinterpretArray{UInt8, 1, Complex{Int64}, Vector{Complex{Int64}}, false}; context::Nothing)
+   @ Base64 ~/.julia/juliaup/julia-1.13.2+0.x64.linux.gnu/share/julia/stdlib/v1.13/Base64/src/encode.jl:213
+ [3] base64encode(args::Base.ReinterpretArray{UInt8, 1, Complex{Int64}, Vector{Complex{Int64}}, false}; context::Nothing)
+   @ Base64 ~/.julia/juliaup/julia-1.13.2+0.x64.linux.gnu/share/julia/stdlib/v1.13/Base64/src/encode.jl:216 [inlined]
+ [4] fill_value_encoding(v::Complex{Int64})
+   @ ZarrCore ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/ZarrCore/src/metadata.jl:322 [inlined]
+ [5] exercise(::Type{Int64})
+   @ Main ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/examples/trim/smoke.jl:10
+ [6] main(args::Vector{String})
+   @ Main ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/examples/trim/smoke.jl:25 [inlined]
+ [7] _main(argc::Int32, argv::Ptr{Ptr{Int8}})
+   @ Main ~/.factory/runners/personal/depots/lineage/dc2d180db386650909eb04513318efa4ba796f1c6cf4a913d1f4630ac6f1941c/packages/JuliaC/CQ4OE/src/scripts/juliac-buildscript.jl:77
+
+Error #5: unresolved call from statement write(
+  getfield(pipe::Base64.Base64EncodePipe, :io::Symbol)::IO,
+  (…)::UInt8,
+  (…)::UInt8,
+  (…)::UInt8,
+  0x3d::UInt8
+)::Any
+
+Stacktrace:
+ [1] close(pipe::Base64.Base64EncodePipe)
+   @ Base64 ~/.julia/juliaup/julia-1.13.2+0.x64.linux.gnu/share/julia/stdlib/v1.13/Base64/src/encode.jl:121
+ [2] base64encode(f::typeof(write), args::Base.ReinterpretArray{UInt8, 1, Complex{Int64}, Vector{Complex{Int64}}, false}; context::Nothing)
+   @ Base64 ~/.julia/juliaup/julia-1.13.2+0.x64.linux.gnu/share/julia/stdlib/v1.13/Base64/src/encode.jl:213
+ [3] base64encode(args::Base.ReinterpretArray{UInt8, 1, Complex{Int64}, Vector{Complex{Int64}}, false}; context::Nothing)
+   @ Base64 ~/.julia/juliaup/julia-1.13.2+0.x64.linux.gnu/share/julia/stdlib/v1.13/Base64/src/encode.jl:216 [inlined]
+ [4] fill_value_encoding(v::Complex{Int64})
+   @ ZarrCore ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/ZarrCore/src/metadata.jl:322 [inlined]
+ [5] exercise(::Type{Int64})
+   @ Main ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/examples/trim/smoke.jl:10
+ [6] main(args::Vector{String})
+   @ Main ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/examples/trim/smoke.jl:25 [inlined]
+ [7] _main(argc::Int32, argv::Ptr{Ptr{Int8}})
+   @ Main ~/.factory/runners/personal/depots/lineage/dc2d180db386650909eb04513318efa4ba796f1c6cf4a913d1f4630ac6f1941c/packages/JuliaC/CQ4OE/src/scripts/juliac-buildscript.jl:77
+
+Error #6: unresolved call from statement write(
+  getfield(pipe::Base64.Base64EncodePipe, :io::Symbol)::IO,
+  (…)::UInt8,
+  (…)::UInt8,
+  (…)::UInt8,
+  (…)::UInt8
+)::Any
+
+Stacktrace:
+ [1] close(pipe::Base64.Base64EncodePipe)
+   @ Base64 ~/.julia/juliaup/julia-1.13.2+0.x64.linux.gnu/share/julia/stdlib/v1.13/Base64/src/encode.jl:128
+ [2] base64encode(f::typeof(write), args::Base.ReinterpretArray{UInt8, 1, Complex{Int64}, Vector{Complex{Int64}}, false}; context::Nothing)
+   @ Base64 ~/.julia/juliaup/julia-1.13.2+0.x64.linux.gnu/share/julia/stdlib/v1.13/Base64/src/encode.jl:213
+ [3] base64encode(args::Base.ReinterpretArray{UInt8, 1, Complex{Int64}, Vector{Complex{Int64}}, false}; context::Nothing)
+   @ Base64 ~/.julia/juliaup/julia-1.13.2+0.x64.linux.gnu/share/julia/stdlib/v1.13/Base64/src/encode.jl:216 [inlined]
+ [4] fill_value_encoding(v::Complex{Int64})
+   @ ZarrCore ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/ZarrCore/src/metadata.jl:322 [inlined]
+ [5] exercise(::Type{Int64})
+   @ Main ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/examples/trim/smoke.jl:10
+ [6] main(args::Vector{String})
+   @ Main ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/examples/trim/smoke.jl:25 [inlined]
+ [7] _main(argc::Int32, argv::Ptr{Ptr{Int8}})
+   @ Main ~/.factory/runners/personal/depots/lineage/dc2d180db386650909eb04513318efa4ba796f1c6cf4a913d1f4630ac6f1941c/packages/JuliaC/CQ4OE/src/scripts/juliac-buildscript.jl:77
+
+Error #7: unresolved call from statement unsafe_write(
+  getfield(pipe::Base64.Base64EncodePipe, :io::Symbol)::IO,
+  (…)::Ptr{UInt8},
+  (…)::Int64
+)::Any
+
+Stacktrace:
+ [1] unsafe_write(pipe::Base64.Base64EncodePipe, ptr::Ptr{UInt8}, n::UInt64)
+   @ Base64 ~/.julia/juliaup/julia-1.13.2+0.x64.linux.gnu/share/julia/stdlib/v1.13/Base64/src/encode.jl:86
+ [2] unsafe_write(s::Base64.Base64EncodePipe, p::Ptr{UInt8}, n::Int64)
+   @ Base io.jl:827 [inlined]
+
+[excerpt; remaining diagnostics omitted]
+Trim verify finished with 16 errors, 0 warnings.

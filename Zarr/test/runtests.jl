@@ -70,11 +70,12 @@ end
 end
 
 include("registration.jl")
+include("complex_integer_static.jl")
 
 @testset "ZArray" begin
     @testset "fields" begin
         z = zzeros(Int64, 2, 3)
-            @test z isa ZArray{Int64,2,ZarrCore.DictStore,ZarrCore.MetadataV2{Int64,2,Zarr.BloscCompressor,Nothing}}
+            @test z isa ZArray{Int64,2,ZarrCore.DictStore,<:ZarrCore.MetadataV2{Int64,2,Zarr.BloscCompressor,Nothing}}
         @test :a ∈ propertynames(z.storage)
         @test length(z.storage.a) === 3
         @test length(z.storage.a["0.0"]) === 64
@@ -100,7 +101,7 @@ include("registration.jl")
 
     @testset "methods" begin
         z = zzeros(Int64, 2, 3)
-            @test z isa ZArray{Int64,2,Zarr.DictStore,ZarrCore.MetadataV2{Int64,2,Zarr.BloscCompressor,Nothing}}
+            @test z isa ZArray{Int64,2,Zarr.DictStore,<:ZarrCore.MetadataV2{Int64,2,Zarr.BloscCompressor,Nothing}}
         @test eltype(z) === Int64
         @test ndims(z) === 2
         @test size(z) === (2, 3)

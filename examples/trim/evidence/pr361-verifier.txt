@@ -1,0 +1,124 @@
+Julia 1.13.2 / JuliaC 0.3.12 / plain --trim
+Error #1: unresolved call from statement ZarrCore.fill_value_decoding(
+  (…)::Dict{String, Int16},
+  parse_datatype3((…)::Dict{String, Any})::Union{Type{Complex{_A}} where _A, Type{ZarrCore.MaxLengthStrings.MaxLengthString{_A, UInt32}} where _A}
+)::Union{Complex{_A} where _A<:Signed, ZarrCore.MaxLengthStrings.MaxLengthString{_A, UInt32} where _A}
+
+Stacktrace:
+ [1] main(args::Vector{String})
+   @ Main ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/examples/trim/baseline_smoke.jl:9
+ [2] _main(argc::Int32, argv::Ptr{Ptr{Int8}})
+   @ Main ~/.factory/runners/personal/depots/lineage/dc2d180db386650909eb04513318efa4ba796f1c6cf4a913d1f4630ac6f1941c/packages/JuliaC/CQ4OE/src/scripts/juliac-buildscript.jl:77
+
+Error #2: unresolved call from statement ==(
+  getfield(
+    ZarrCore.fill_value_decoding(
+      (…)::Dict{String, Int16},
+      parse_datatype3((…)::Dict{String, Any})::Union{Type{Complex{_A}} where _A, Type{ZarrCore.MaxLengthStrings.MaxLengthString{_A, UInt32}} where _A}
+    )::Complex{_A} where _A<:Signed,
+    :re::Symbol
+  )::Signed,
+  (…)::Int16
+)::Any
+
+Stacktrace:
+ [1] main(args::Vector{String})
+   @ Main ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/examples/trim/baseline_smoke.jl:10
+ [2] _main(argc::Int32, argv::Ptr{Ptr{Int8}})
+   @ Main ~/.factory/runners/personal/depots/lineage/dc2d180db386650909eb04513318efa4ba796f1c6cf4a913d1f4630ac6f1941c/packages/JuliaC/CQ4OE/src/scripts/juliac-buildscript.jl:77
+
+Error #3: unresolved call from statement ==(
+  getfield(
+    ZarrCore.fill_value_decoding(
+      (…)::Dict{String, Int16},
+      parse_datatype3((…)::Dict{String, Any})::Union{Type{Complex{_A}} where _A, Type{ZarrCore.MaxLengthStrings.MaxLengthString{_A, UInt32}} where _A}
+    )::Complex{_A} where _A<:Signed,
+    :im::Symbol
+  )::Signed,
+  -2::Int64
+)::Any
+
+Stacktrace:
+ [1] main(args::Vector{String})
+   @ Main ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/examples/trim/baseline_smoke.jl:10
+ [2] _main(argc::Int32, argv::Ptr{Ptr{Int8}})
+   @ Main ~/.factory/runners/personal/depots/lineage/dc2d180db386650909eb04513318efa4ba796f1c6cf4a913d1f4630ac6f1941c/packages/JuliaC/CQ4OE/src/scripts/juliac-buildscript.jl:77
+
+Error #4: unresolved call from statement ==(
+  get(d::Dict{String, Any}, "name"::String, nothing::Nothing)::Any,
+  "fixed_length_utf32"::String
+)::Any
+
+Stacktrace:
+ [1] parse_datatype3(d::Dict{String, Any})
+   @ ZarrCore ~/.factory/profiles/personal/tmp/407e9ab9-3138-4e69-986a-bda7fb218f3f/zarr-pr361/ZarrCore/src/metadata3.jl:58
+ [2] typestr3(d::Dict{String, Any})
+   @ ZarrCore ~/.factory/profiles/personal/tmp/407e9ab9-3138-4e69-986a-bda7fb218f3f/zarr-pr361/ZarrCore/src/metadata3.jl:54 [inlined]
+ [3] main(args::Vector{String})
+   @ Main ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/examples/trim/baseline_smoke.jl:8
+ [4] _main(argc::Int32, argv::Ptr{Ptr{Int8}})
+   @ Main ~/.factory/runners/personal/depots/lineage/dc2d180db386650909eb04513318efa4ba796f1c6cf4a913d1f4630ac6f1941c/packages/JuliaC/CQ4OE/src/scripts/juliac-buildscript.jl:77
+
+Error #5: unresolved call from statement getindex(
+  getindex(d::Dict{String, Any}, "configuration"::String)::Any,
+  "length_bytes"::String
+)::Any
+
+Stacktrace:
+ [1] parse_datatype3(d::Dict{String, Any})
+   @ ZarrCore ~/.factory/profiles/personal/tmp/407e9ab9-3138-4e69-986a-bda7fb218f3f/zarr-pr361/ZarrCore/src/metadata3.jl:59
+ [2] typestr3(d::Dict{String, Any})
+   @ ZarrCore ~/.factory/profiles/personal/tmp/407e9ab9-3138-4e69-986a-bda7fb218f3f/zarr-pr361/ZarrCore/src/metadata3.jl:54 [inlined]
+ [3] main(args::Vector{String})
+   @ Main ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/examples/trim/baseline_smoke.jl:8
+ [4] _main(argc::Int32, argv::Ptr{Ptr{Int8}})
+   @ Main ~/.factory/runners/personal/depots/lineage/dc2d180db386650909eb04513318efa4ba796f1c6cf4a913d1f4630ac6f1941c/packages/JuliaC/CQ4OE/src/scripts/juliac-buildscript.jl:77
+
+Error #6: unresolved call from statement ÷(
+  getindex(
+    getindex(d::Dict{String, Any}, "configuration"::String)::Any,
+    "length_bytes"::String
+  )::Any,
+  4::Int64
+)::Any
+
+Stacktrace:
+ [1] parse_datatype3(d::Dict{String, Any})
+   @ ZarrCore ~/.factory/profiles/personal/tmp/407e9ab9-3138-4e69-986a-bda7fb218f3f/zarr-pr361/ZarrCore/src/metadata3.jl:59
+ [2] typestr3(d::Dict{String, Any})
+   @ ZarrCore ~/.factory/profiles/personal/tmp/407e9ab9-3138-4e69-986a-bda7fb218f3f/zarr-pr361/ZarrCore/src/metadata3.jl:54 [inlined]
+ [3] main(args::Vector{String})
+   @ Main ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/examples/trim/baseline_smoke.jl:8
+ [4] _main(argc::Int32, argv::Ptr{Ptr{Int8}})
+   @ Main ~/.factory/runners/personal/depots/lineage/dc2d180db386650909eb04513318efa4ba796f1c6cf4a913d1f4630ac6f1941c/packages/JuliaC/CQ4OE/src/scripts/juliac-buildscript.jl:77
+
+Error #7: unresolved call from statement in(
+  get(d::Dict{String, Any}, "name"::String, nothing::Nothing)::Any,
+  (…)::Tuple{String, String}
+)::Union{Missing, Bool}
+
+Stacktrace:
+ [1] parse_datatype3(d::Dict{String, Any})
+   @ ZarrCore ~/.factory/profiles/personal/tmp/407e9ab9-3138-4e69-986a-bda7fb218f3f/zarr-pr361/ZarrCore/src/metadata3.jl:62
+ [2] typestr3(d::Dict{String, Any})
+   @ ZarrCore ~/.factory/profiles/personal/tmp/407e9ab9-3138-4e69-986a-bda7fb218f3f/zarr-pr361/ZarrCore/src/metadata3.jl:54 [inlined]
+ [3] main(args::Vector{String})
+   @ Main ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/examples/trim/baseline_smoke.jl:8
+ [4] _main(argc::Int32, argv::Ptr{Ptr{Int8}})
+   @ Main ~/.factory/runners/personal/depots/lineage/dc2d180db386650909eb04513318efa4ba796f1c6cf4a913d1f4630ac6f1941c/packages/JuliaC/CQ4OE/src/scripts/juliac-buildscript.jl:77
+
+Error #8: unresolved call from statement getindex(
+  getindex(d::Dict{String, Any}, "configuration"::String)::Any,
+  "fields"::String
+)::Any
+
+Stacktrace:
+ [1] parse_datatype3(d::Dict{String, Any})
+   @ ZarrCore ~/.factory/profiles/personal/tmp/407e9ab9-3138-4e69-986a-bda7fb218f3f/zarr-pr361/ZarrCore/src/metadata3.jl:63
+ [2] typestr3(d::Dict{String, Any})
+   @ ZarrCore ~/.factory/profiles/personal/tmp/407e9ab9-3138-4e69-986a-bda7fb218f3f/zarr-pr361/ZarrCore/src/metadata3.jl:54 [inlined]
+ [3] main(args::Vector{String})
+   @ Main ~/.factory/runners/personal/clones/407e9ab9-3138-4e69-986a-bda7fb218f3f/Zarr.jl/examples/trim/baseline_smoke.jl:8
+
+[excerpt; remaining diagnostics omitted]
+Trim verify finished with 68 errors, 0 warnings.
